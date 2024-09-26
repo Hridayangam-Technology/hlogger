@@ -7,7 +7,7 @@ import structlog
 from himalaya.core.constants import LOGGER_COLORS
 
 
-class Logger:
+class Hlogger:
     show_source_location: bool = True
 
     def __init__(self) -> None:
@@ -55,6 +55,3 @@ class Logger:
 
     def critical(self, message: str, exc_info: bool = True) -> None:
         self._log(self.critical_log_method, message, exc_info, "CRITICAL")
-
-
-logger = Logger()
