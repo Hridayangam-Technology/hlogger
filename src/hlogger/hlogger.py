@@ -4,7 +4,8 @@ from typing import Callable, cast
 
 import logfire
 import structlog
-from himalaya.core.constants import LOGGER_COLORS
+
+from hlogger.constants import LOGGER_COLORS
 
 
 class Hlogger:
