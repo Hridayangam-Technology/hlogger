@@ -1,11 +1,10 @@
 import os
 import traceback
-from typing import Callable
+from typing import Callable, cast
 
 import logfire
 import structlog
-
-from src.hlogger.constants import LOGGER_COLORS
+from himalaya.core.constants import LOGGER_COLORS
 
 
 class Logger:
@@ -27,20 +26,20 @@ class Logger:
     def _log(
         self, log_method: Callable, message: str, exc_info: bool, level: str
     ) -> None:
-        if level not in self.allowed_levels:
-            return None
-        loc: str = ""
-        fn: str = ""
-        tb: list[traceback.FrameSummary] = traceback.extract_stack()
-        if len(tb) > 2 and self.show_source_location:
-            loc = f"({os.path.basename(tb[-3][0])}:{tb[-3][1]}):"
-            fn = tb[-3][2]
-            if fn != "<module>":
-                fn += "()"
-        color: str = LOGGER_COLORS.get(level, LOGGER_COLORS["RESET"])
-        reset: str = LOGGER_COLORS["RESET"]
-        colored_message: str = f"{color}{loc + fn}: {message}{reset}"
-        log_method(colored_message, exc_info=exc_info)
+        if level in self.allowed_levels:
+            loc: str = ""
+            fn: str = ""
+            tb: list[traceback.FrameSummary] = traceback.extract_stack()
+            if len(tb) > 2:
+                if self.show_source_location:
+                    loc = f"({os.path.basename(tb[-3][0])}:{tb[-3][1]}):"
+                fn = tb[-3][2]
+                if fn != "<module>":
+                    fn += "()"
+            color: str = LOGGER_COLORS.get(level, cast(str, LOGGER_COLORS.get("RESET")))
+            reset: str = cast(str, LOGGER_COLORS.get("RESET"))
+            colored_message: str = f"{color}{loc + fn}: {message}{reset}"
+            log_method(colored_message, exc_info=exc_info)
 
     def info(self, message: str, exc_info: bool = False) -> None:
         self._log(self.logger.info, message, exc_info, "INFO")
