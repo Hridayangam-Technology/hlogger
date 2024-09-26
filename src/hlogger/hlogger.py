@@ -1,0 +1,2 @@
+class Hlogger:
+    pass
